@@ -4,15 +4,19 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -20,24 +24,21 @@ jobs:
           flutter-version: '3.22.2'
           channel: 'stable'
 
-      - name: Install Flet and dependencies
-        run: |
-          pip install flet==0.28.2
-          pip install python-dotenv groq
+      - name: Install Flet
+        run: pip install flet==0.28.2
 
-      - name: Unzip and Build APK
+      - name: Build APK
         run: |
           if [ -f "JARVIS-Dina.zip" ]; then
             unzip -o JARVIS-Dina.zip
+            rm -f JARVIS-Dina/.env
           fi
           cd JARVIS-Dina
+          rm -f .env
           flet build apk --verbose
 
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: JARVIS-APK
-          path: |
-            JARVIS-Dina/build/apk
-            build/apk
-          if-no-files-found: error
+          path: JARVIS-Dina/build/apk
