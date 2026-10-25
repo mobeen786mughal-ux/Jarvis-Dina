@@ -1,33 +1,35 @@
-name: Build from ZIP
+name: build-apk
 on: [push]
 
 jobs:
-  build-apk:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Unzip JARVIS
-        run: |
-          unzip -o JARVIS-Dina.zip -d .
-          ls -R
-
+      - uses: actions/checkout@v4
+      
+      - name: Unzip Project
+        run: unzip -o JARVIS-Dina.zip
+      
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Install Flet
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+      
+      - name: Install Flet 0.28.2
         run: |
           pip install --upgrade pip
-          pip install flet groq python-dotenv
-
+          pip install flet==0.28.2
+      
       - name: Build APK
         run: |
           cd JARVIS-Dina
-          flet build apk --yes --verbose
-
+          flet build apk --verbose
+      
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
