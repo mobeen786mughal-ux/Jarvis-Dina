@@ -1,0 +1,30 @@
+name: Build from ZIP
+on: [push]
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Unzip JARVIS
+        run: |
+          unzip -o JARVIS-Dina.zip
+          ls -R
+          
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install Flet
+        run: pip install flet
+        
+      - name: Build APK
+        run: |
+          cd JARVIS-Dina
+          flet build apk --verbose
+          
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: JARVIS-APK
+          path: JARVIS-Dina/build/apk
