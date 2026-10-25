@@ -1,28 +1,33 @@
 name: Build from ZIP
 on: [push]
+
 jobs:
   build-apk:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Unzip JARVIS
         run: |
-          unzip -o JARVIS-Dina.zip
+          unzip -o JARVIS-Dina.zip -d .
           ls -R
-          
-      - uses: actions/setup-python@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          
+
       - name: Install Flet
-        run: pip install flet
-        
+        run: |
+          pip install --upgrade pip
+          pip install flet groq python-dotenv
+
       - name: Build APK
         run: |
           cd JARVIS-Dina
-          flet build apk --verbose
-          
+          flet build apk --yes --verbose
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
